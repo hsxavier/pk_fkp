@@ -2,33 +2,30 @@
 # This is the input file for the pk_fkp.py pack #
 #################################################
 
-# Insert CAMB's Power Spectra file name here:
+# Fiducial power spectrum (camb_file):
 fid_matterpower.dat
 
-# Size of the cell in h^-1Mpc
+# Size of the cell in h^-1Mpc (cell_size):
 15.10
 
-# Number of cells in the X direction (must be integer)
+# Number of cells in the X direction, must be integer (n_x):
 81
 
-# Number of cells in the Y direction (must be integer)
+# Number of cells in the Y direction, must be integer (n_y):
 81
 
-# Number of cells in the Z direction (must be integer)
+# Number of cells in the Z direction, must be integer (n_z):
 81
 
-# Number of realizations (must be integer)
+# Number of realizations, must be integer (num_realiz):
 3
 
-# Bias
+# Bias (bias):
 1.00
 
-# Number of bins to estimate P(k) (must be integer)
-9
-
-# Medium number of galaxies per cell (n_bar)
+# Medium number of galaxies per cell (n_bar0):
 30.
 
-# Which kind of realizations to very? 
+# Which kind of realizations to run (realiz_type): 
 #(1) Gaussian + Poissonian (2) Poissonian Only
 2

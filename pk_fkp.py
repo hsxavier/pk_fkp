@@ -17,8 +17,8 @@ from scipy import interpolate
 #################################################
 # Reading the input file and converting the data
 #################################################
-camb_file, cell_size, n_x, n_y, n_z, num_realiz, bias, num_bins, n_bar0, realiz_type = np.loadtxt('input.dat', dtype=str)
-cell_size = float(cell_size); n_x=int(n_x); n_y=int(n_y); n_z=int(n_z); num_realiz=int(num_realiz); bias=float(bias) ; num_bins=int(num_bins); realiz_type = int(realiz_type); n_bar0 = float(n_bar0);
+camb_file, cell_size, n_x, n_y, n_z, num_realiz, bias, n_bar0, realiz_type = np.loadtxt('input.dat', dtype=str)
+cell_size = float(cell_size); n_x=int(n_x); n_y=int(n_y); n_z=int(n_z); num_realiz=int(num_realiz); bias=float(bias); realiz_type = int(realiz_type); n_bar0 = float(n_bar0);
 
 ######################
 # Reading CAMB's file
@@ -35,7 +35,7 @@ L_x = n_x*cell_size ; L_y = n_y*cell_size ; L_z = n_z*cell_size 		     # size of
 box_vol = L_x*L_y*L_z								     # Box's volume
 print("Generating the k-space Grid...\n")
 grid = gr.grid3d(n_x,n_y,n_z,L_x,L_y,L_z)					     # generates the grid
-grid_bins = gr.grid3d(num_bins, num_bins, num_bins, L_x,L_y,L_z)		     # generates the bins grid
+                                                                                     # generates the bins grid
 										     # multiplying the grid for the cell_size will give us a grid in physical units 
 ######################################
 # Finding Camb's Correlation Function
@@ -100,6 +100,11 @@ def delta_k_g(P_):								     # The density contrast in Fourier Space
 ###############################
 def delta_x_ln(d_,sigma2_):
 	return np.exp(bias*d_ - ((bias**2.)*(sigma2_))/2.0) -1.
+
+###############################
+# Selection function
+###############################
+n_bar=n_bar0                    # Constant selection function inside a box.
 	
 ################################################################
 # FFT Loops for Gaussian and Gaussian + Poissonian Realizations
