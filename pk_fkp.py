@@ -99,8 +99,8 @@ def delta_k_g(P_):								     # The density contrast in Fourier Space
 ###############################
 # the log-normal density field
 ###############################
-def delta_x_ln(d_,sigma_):
-	return np.exp(bias*d_ - ((bias**2.)*(sigma_))/2.0) -1.
+def delta_x_ln(d_,sigma2_):
+	return np.exp(bias*d_ - ((bias**2.)*(sigma2_))/2.0) -1.
 	
 ####################
 # Selection funtion
@@ -207,9 +207,11 @@ elif realiz_type == 2:
 		N_r = np.random.poisson(n_bar*(1.+delta_xr)*(cell_size**3.))     # This is the final galaxy Map
 		N_i = np.random.poisson(n_bar0*(1.+delta_xi)*(cell_size**3.))
 		n_bar0_new = np.mean(N_r)
+
 		#############################
 		# Spliting the Map into bins
 		#############################
+		
 		Nx = np.split(N_r,num_bins)
 		nrx = np.split(n_bar,num_bins)
 		for i in range(len(Nx)):

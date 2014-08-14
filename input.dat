@@ -32,7 +32,7 @@ fid_matterpower.dat
 ###########################################
 # Number of realizations (must be integer)
 ###########################################
-50
+3
 
 #######
 # Bias
@@ -42,7 +42,7 @@ fid_matterpower.dat
 ####################################################
 # Number of bins to estimate P(k) (must be integer)
 ####################################################
-45
+9
 
 #############################################
 # Medium number of galaxies per cell (n_bar)
