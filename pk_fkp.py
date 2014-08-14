@@ -33,14 +33,14 @@ Pk_camb_interp = interpolate.InterpolatedUnivariateSpline(k_camb,Pk_camb)	     #
 #######################
 L_x = n_x*cell_size ; L_y = n_y*cell_size ; L_z = n_z*cell_size 		     # size of the box
 box_vol = L_x*L_y*L_z								     # Box's volume
-print("Generating the k-space Grid...\n")
+print("\nGenerating the k-space Grid...")
 grid = gr.grid3d(n_x,n_y,n_z,L_x,L_y,L_z)					     # generates the grid
                                                                                      # generates the bins grid
 										     # multiplying the grid for the cell_size will give us a grid in physical units 
 ######################################
 # Finding Camb's Correlation Function
 ######################################
-print("Finding the Correlation Function...\n")
+print("Finding the Correlation Function...")
 r_k=1.0*np.linspace(0.5,200.5,201)                                                   # r vector goes from 0.5 to 201 h^-1 MPc
 dk_r=np.diff(k_camb)                                           			     # makes the diff between k and k + dk
 dk_r=np.append(dk_r,[0.0])
@@ -58,7 +58,7 @@ corr_g = np.log(1.+corr_ln)
 ######################################
 # Finding the gaussian power spectrum
 ######################################
-print("Calculating the Gaussian P(k)...\n Any Error Warning here is expected. \n")
+print("Calculating the Gaussian P(k)... Any Error Warning here is expected.")
 dr = np.diff(r_k)
 dr = np.append(dr,[0.0])
 rkr = np.einsum('i,j', r_k,k_camb)
@@ -76,7 +76,7 @@ Pk_gauss_interp = interpolate.UnivariateSpline(k_camb,Pk_gauss)
 ###############################################################
 # Generating the P(K) grid using the gaussian interpolated Pkg
 ###############################################################
-print("\nCalculating the P(k)-Grid...\n")
+print("Calculating the P(k)-Grid...")
 Pkg_vec = np.vectorize(Pk_gauss_interp)
 p_matrix = Pkg_vec(grid.grid_k)
 p_matrix[0][0][0] = 1. 						     # Needs to be 1.
@@ -111,14 +111,20 @@ n_bar=n_bar0                    # Constant selection function inside a box.
 ################################################################
 
 inicial = clock()
-
 file = open('supergrid2.dat','w')
-if realiz_type == 1:
-	print "Doing both Gaussian + Poissonian realizations... \n"
-	for m in range(num_realiz):
+
+# Safeguard against wrong realization choices
+if realiz_type!=1 and realiz_type!=2:
+	print "Error, invalid option for realization's type!\n"
+	sys.exit(-1)
+
+# The realization LOOP
+for m in range(num_realiz):
+	if realiz_type==1 or m==0: 
 		#########################
 		# gaussian density field
 		#########################
+		print "Realizing the underlying density field..."
 		delta_x_gaus = ((delta_k_g(p_matrix).size)/box_vol)*np.fft.ifftn(delta_k_g(p_matrix))	#the iFFT
 		var_gr = np.var(delta_x_gaus.real)
 		var_gi = np.var(delta_x_gaus.imag)
@@ -129,60 +135,23 @@ if realiz_type == 1:
 		###########################
 		delta_xr = delta_x_ln(delta_xr_g, var_gr)
 		delta_xi = delta_x_ln(delta_xi_g, var_gi)
-		#######################
-		#poissonian realization
-		#######################
-		N_r = np.random.poisson(n_bar*(1.+delta_xr)*(cell_size**3.))			     # This is the final galaxy Map
-		N_i = np.random.poisson(n_bar0*(1.+delta_xi)*(cell_size**3.))
-
-		###############################################################
-		# this loop saves the galaxy map so Lucas' program can read it 
-		###############################################################
-		for i in range(n_x):
-			for j in range(n_y):
-				for l in range(n_z):
-					file.write(",%d"%int(N_r[i,j,l]))
+	#######################
+	#poissonian realization
+	#######################
+	print "Poisson sampling the field..."
+	N_r = np.random.poisson(n_bar*(1.+delta_xr)*(cell_size**3.))			     # This is the final galaxy Map
+	N_i = np.random.poisson(n_bar0*(1.+delta_xi)*(cell_size**3.))
+	###############################################################
+	# this loop saves the galaxy map so Lucas' program can read it 
+	###############################################################
+	for i in range(n_x):
+		for j in range(n_y):
+			for l in range(n_z):
+				file.write(",%d"%int(N_r[i,j,l]))
 		
-		
-		##########################################
-		#$%%$ AQUI SEGUE O CÓDIGO PARA O FKP $%%$#
-		##########################################
-		
-	print "\nDone.\n"
-
-elif realiz_type == 2:
-	print "Doing Poissonian realizations only \n"
-	#########################
-	# gaussian density field
-	#########################
-	delta_x_gaus = ((delta_k_g(p_matrix).size)/box_vol)*np.fft.ifftn(delta_k_g(p_matrix))	#the iFFT
-	var_gr = np.var(delta_x_gaus.real)
-	var_gi = np.var(delta_x_gaus.imag)
-	delta_xr_g = delta_x_gaus.real
-	delta_xi_g = delta_x_gaus.imag
-	###########################
-	# Log-Normal Density Field
-	###########################
-	delta_xr = delta_x_ln(delta_xr_g, var_gr)
-	delta_xi = delta_x_ln(delta_xi_g, var_gi)
-	for m in range(num_realiz):
-		#######################
-		#poissonian realization
-		#######################
-		N_r = np.random.poisson(n_bar*(1.+delta_xr)*(cell_size**3.))     # This is the final galaxy Map
-		N_i = np.random.poisson(n_bar0*(1.+delta_xi)*(cell_size**3.))
-		n_bar0_new = np.mean(N_r)
-		
-		##########################################
-		#$%%$ AQUI SEGUE O CÓDIGO PARA O FKP $%%$#
-		##########################################
-
-	print "\nDone.\n" 
-
-else:
-	print "Error, invalid option for realization's type \n"
-	sys.exit(-1)
+print "Done.\n"
 
 file.close()
 final = clock()
-print "time = " + str(final - inicial)		
+print "time = " + str(final - inicial) + "\n"
+		
