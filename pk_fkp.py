@@ -35,8 +35,8 @@ L_x = n_x*cell_size ; L_y = n_y*cell_size ; L_z = n_z*cell_size 		     # size of
 box_vol = L_x*L_y*L_z								     # Box's volume
 print("\nGenerating the k-space Grid...")
 grid = gr.grid3d(n_x,n_y,n_z,L_x,L_y,L_z)					     # generates the grid
-                                                                                     # generates the bins grid
-										     # multiplying the grid for the cell_size will give us a grid in physical units 
+                                                                                     # multiplying the grid for the cell_size will 
+										     # give us a grid in physical units 
 ######################################
 # Finding Camb's Correlation Function
 ######################################
@@ -111,7 +111,7 @@ n_bar=n_bar0                    # Constant selection function inside a box.
 ################################################################
 
 inicial = clock()
-file = open('supergrid2.dat','w')
+catalog = open('catalog.dat','w')
 
 # Safeguard against wrong realization choices
 if realiz_type!=1 and realiz_type!=2:
@@ -142,16 +142,17 @@ for m in range(num_realiz):
 	N_r = np.random.poisson(n_bar*(1.+delta_xr)*(cell_size**3.))			     # This is the final galaxy Map
 	N_i = np.random.poisson(n_bar0*(1.+delta_xi)*(cell_size**3.))
 	###############################################################
-	# this loop saves the galaxy map so Lucas' program can read it 
+	# this loop saves the galaxy catalog 
 	###############################################################
 	for i in range(n_x):
 		for j in range(n_y):
 			for l in range(n_z):
-				file.write(",%d"%int(N_r[i,j,l]))
-		
+				print >> catalog, i*cell_size, j*cell_size, l*cell_size, N_r[i,j,l]
+
+# End of the realization LOOP.		
 print "Done.\n"
 
-file.close()
+catalog.close()
 final = clock()
 print "time = " + str(final - inicial) + "\n"
 		

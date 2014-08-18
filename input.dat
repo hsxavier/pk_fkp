@@ -18,12 +18,12 @@ fid_matterpower.dat
 81
 
 # Number of realizations, must be integer (num_realiz):
-3
+1
 
 # Bias (bias):
 1.00
 
-# Medium number of galaxies per cell (n_bar0):
+# Medium number of galaxies per (Mpc/h)^3 (n_bar0):
 30.
 
 # Which kind of realizations to run (realiz_type): 
