@@ -27,5 +27,5 @@ fid_matterpower.dat
 30.
 
 # Which kind of realizations to run (realiz_type): 
-#(1) Gaussian + Poissonian (2) Poissonian Only
-1
+#(1) Gaussian + Poissonian (2) Poissonian Only (3) Gaussian Only
+3

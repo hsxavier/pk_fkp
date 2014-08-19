@@ -31,6 +31,7 @@ Pk_camb_interp = interpolate.InterpolatedUnivariateSpline(k_camb,Pk_camb)	     #
 #######################
 # Initial calculations
 #######################
+cell_vol = cell_size**3.                                                             # Cell volume
 L_x = n_x*cell_size ; L_y = n_y*cell_size ; L_z = n_z*cell_size 		     # size of the box
 box_vol = L_x*L_y*L_z								     # Box's volume
 print("\nGenerating the k-space Grid...")
@@ -114,33 +115,39 @@ inicial = clock()
 catalog = open('catalog.dat','w')
 
 # Safeguard against wrong realization choices
-if realiz_type!=1 and realiz_type!=2:
+# 1 Gaussian+Poisson; 2 Poisson only; 3 Gaussian only
+if realiz_type!=1 and realiz_type!=2 and realiz_type!=3:
 	print "Error, invalid option for realization's type!\n"
 	sys.exit(-1)
 
-# The realization LOOP
+# The realization LOOP, each m is one catalog.
 for m in range(num_realiz):
-	if realiz_type==1 or m==0: 
+	if realiz_type!=2 or m==0: 
 		#########################
 		# gaussian density field
 		#########################
 		print "Realizing the underlying density field..."
 		delta_x_gaus = ((delta_k_g(p_matrix).size)/box_vol)*np.fft.ifftn(delta_k_g(p_matrix))	#the iFFT
 		var_gr = np.var(delta_x_gaus.real)
-		var_gi = np.var(delta_x_gaus.imag)
+		#var_gi = np.var(delta_x_gaus.imag)
 		delta_xr_g = delta_x_gaus.real
-		delta_xi_g = delta_x_gaus.imag
+		#delta_xi_g = delta_x_gaus.imag
 		###########################
 		# Log-Normal Density Field
 		###########################
 		delta_xr = delta_x_ln(delta_xr_g, var_gr)
-		delta_xi = delta_x_ln(delta_xi_g, var_gi)
-	#######################
-	#poissonian realization
-	#######################
-	print "Poisson sampling the field..."
-	N_r = np.random.poisson(n_bar*(1.+delta_xr)*(cell_size**3.))			     # This is the final galaxy Map
-	N_i = np.random.poisson(n_bar0*(1.+delta_xi)*(cell_size**3.))
+		#delta_xi = delta_x_ln(delta_xi_g, var_gi)
+	########################
+	# Poissonian realization
+	########################
+	if realiz_type==3:
+		print "Populating catalog with mean density..."
+		N_r = n_bar*(1.+delta_xr)*cell_vol
+	else:
+		print "Poisson sampling the field..."
+		N_r = np.random.poisson(n_bar*(1.+delta_xr)*cell_vol)			     # This is the final galaxy Map
+		#N_i = np.random.poisson(n_bar0*(1.+delta_xi)*cell_vol)
+
 	###############################################################
 	# this loop saves the galaxy catalog 
 	###############################################################
