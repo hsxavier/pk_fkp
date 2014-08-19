@@ -17,7 +17,7 @@ from scipy import interpolate
 #################################################
 # Reading the input file and converting the data
 #################################################
-camb_file, cell_size, n_x, n_y, n_z, num_realiz, bias, n_bar0, realiz_type = np.loadtxt('input.dat', dtype=str)
+camb_file, cell_size, n_x, n_y, n_z, num_realiz, bias, n_bar0, realiz_type, outfile = np.loadtxt('input.dat', dtype=str)
 cell_size = float(cell_size); n_x=int(n_x); n_y=int(n_y); n_z=int(n_z); num_realiz=int(num_realiz); bias=float(bias); realiz_type = int(realiz_type); n_bar0 = float(n_bar0);
 
 ######################
@@ -112,7 +112,7 @@ n_bar=n_bar0                    # Constant selection function inside a box.
 ################################################################
 
 inicial = clock()
-catalog = open('catalog.dat','w')
+catalog = open(outfile,'w')
 
 # Safeguard against wrong realization choices
 # 1 Gaussian+Poisson; 2 Poisson only; 3 Gaussian only

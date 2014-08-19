@@ -29,3 +29,6 @@ fid_matterpower.dat
 # Which kind of realizations to run (realiz_type): 
 #(1) Gaussian + Poissonian (2) Poissonian Only (3) Gaussian Only
 3
+
+# Output filename (outfile):
+nopoisson.dat
